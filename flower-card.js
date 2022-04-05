@@ -161,6 +161,9 @@ customElements.whenDefined('card-tools').then(() => {
             // ${val} (${min}-${max})
       }
 
+      var tempmin = (this.tempunit == "°F") ? Math.round((Flower[4]*9/5)+32) : Flower[4];
+      var tempmax = (this.tempunit == "°F") ? Math.round((Flower[5]*9/5)+32) : Flower[5];
+      
       return cardTools.LitHtml`
       <ha-card>
       <div class="header"
@@ -173,7 +176,7 @@ customElements.whenDefined('card-tools').then(() => {
       <div class="divider"></div>
 
       <div class="attributes">
-      ${attribute('mdi:thermometer', 'temperature', Flower[4], Flower[5])}
+      ${attribute('mdi:thermometer', 'temperature', tempmin, tempmax)}
       ${attribute('mdi:white-balance-sunny', 'brightness', Flower[2], Flower[3])}
       </div>
       <div class="attributes">
@@ -187,6 +190,7 @@ customElements.whenDefined('card-tools').then(() => {
 
     set hass(hass) {
       this._hass = hass;
+      this.tempunit = hass.config.unit_system.temperature;
       this.stateObj = hass.states[this.config.entity];
       this.requestUpdate();
     }
