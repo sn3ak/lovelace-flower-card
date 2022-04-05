@@ -81,6 +81,9 @@ customElements.whenDefined('card-tools').then(() => {
       .meter > .bad {
         background-color: rgba(240,163,163);
       }
+      .meter > .unavailable {
+        background-color: rgba(158,158,158,1);
+      }      
       .divider {
         height: 1px;
         background-color: #727272;
@@ -128,28 +131,29 @@ customElements.whenDefined('card-tools').then(() => {
     const attribute = (icon, attr, min, max) => {
       const unit = this.stateObj.attributes.unit_of_measurement_dict[attr];
       const val = this.stateObj.attributes[attr];
+      const aval = val !== 'unavailable' ? true : false;
         const pct = 100*Math.max(0, Math.min(1, (val-min)/(max-min)));
         return cardTools.LitHtml`
         <div class="attribute tooltip"
-        data-tooltip="${val + " "+ unit + " | " + min + " ~ " + max + " " + unit}"
+        data-tooltip="${aval ? val + " "+ unit + " | " + min + " ~ " + max + " " + unit : val}"
           @click="${() => cardTools.moreInfo(this.stateObj.attributes.sensors[attr])}">
             <ha-icon .icon="${icon}"></ha-icon>
             <div class="meter red">
               <span
-              class="${val < min || val > max ? 'bad' : 'good'}"
+              class="${aval ? (val < min || val > max ? 'bad' : 'good') : 'unavailable}"
               style="width: 100%;"
               ></span>
             </div>
             <div class="meter green">
               <span
-              class="${val > max ? 'bad' : 'good'}"
-              style="width:${pct}%;"
+              class="${aval ? (val > max ? 'bad' : 'good') : 'unavailable}"
+              style="width:${aval ? pct : '0'}%;"
               ></span>
             </div>
             <div class="meter red">
               <span
               class="bad"
-              style="width:${val > max ? 100 : 0}%;"
+              style="width:${aval ? (val > max ? 100 : 0) : '0'}%;"
               ></span>
             </div>
           </div>
